@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo List</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <section>
+        <table class="table table-hover text-center">
+          <thead class="bg-light">
+            <tr>
+              <td class="dropdown">
+                <a
+                  class="btn-sm btn dropdown-toggle"
+                  href="#"
+                  role="button"
+                  id="dropdownMenuLink"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  @click="checked=null"
+                >
+                  All
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <li>
+                    <a class="dropdown-item" href="#" @click="checked=false"
+                      >done</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#" @click="checked=true"
+                      >undo</a
+                    >
+                  </li>
+                </ul>
+              </td>
+              <td>date</td>
+              <td>item</td>
+              <td>delete</td>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- <tr>
+                    <td><input type="checkbox"></td>
+                    <td><input type="date" ></td>
+                    <td><input type="text" placeholder="代辦事項"></td>
+                    <td><button id="delete">X</button></td>
+                </tr> -->
+            <tr
+              v-for="(l,index) in listArr"
+              :key="index"
+              v-show="l.check != checked"
+            >
+              <td>
+                <input
+                  class="form-check-input text-center"
+                  type="checkbox"
+                  v-model="l.check"
+                  for=""
+                />
+              </td>
+              <td>
+                <input class="form-control" type="date" v-model.lazy="l.date" />
+              </td>
+              <td>
+                <input
+                  class="form-control"
+                  type="text"
+                  placeholder="代辦事項"
+                  v-model.lazy="l.item"
+                />
+              </td>
+              <td>
+                <button
+                  class="btn btn-outline-danger"
+                  id="delete"
+                  @click="removeList(index)"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-trash-fill"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" class="text-start">
+                <button class="btn btn-secondary w-100" @click="addToList">
+                  +
+                </button>
+              </td>
+              <td>
+                <button class="btn btn-danger w-100" @click="clearAll">
+                  Clear All
+                </button>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </section>
+      <footer>
+        <p class="fs-6 fw-lighter text-center text-secondary">
+          &nbsp;ToDo List with Vue 3&nbsp;
+        </p>
+      </footer>
+    </div>
+
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+      const app = Vue.createApp({
+        data() {
+          return {
+            newDate: "",
+            newItem: "",
+            listArr: [
+              // {
+              //     check: "",
+              //     date: "",
+              //     item: "",
+              // },
+            ],
+            checked: null,
+          };
+        },
+        methods: {
+          removeList(i) {
+            this.listArr.splice(i, 1);
+          },
+          addToList() {
+            this.listArr.push({ check: "", date: "", item: "" });
+            this.checked = null;
+          },
+          clearAll() {
+            this.listArr = [];
+          },
+        },
+        watch: {
+          listArr: {
+            handler() {
+              console.log(this.listArr);
+              localStorage.setItem("todoList", JSON.stringify(this.listArr));
+            },
+            deep: true,
+          },
+        },
+        mounted() {
+          let todoList = localStorage.getItem("todoList");
+          if (todoList) {
+            this.listArr = JSON.parse(todoList);
+          }
+        },
+      });
+      app.mount("#app");
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
